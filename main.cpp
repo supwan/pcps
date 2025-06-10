@@ -1,11 +1,8 @@
-/*
- * MIT LICENSE @ WAN ISA
- */
-
 #include <iostream>
-
+#include <iomanip> // For setprecision
 using namespace std;
 
+// Structure to hold each laundry package's details
 struct Package {
     string package;
     string serviceType;
@@ -13,6 +10,7 @@ struct Package {
     float charge;
 };
 
+// List of available packages
 const Package packages[6] {
     {"Package A (Standard Wash) - Clothes, Towels, Bed Sheets", "Self-Service", "2 Days", 5.00},
     {"Package A (Standard Wash) - Clothes, Towels, Bed Sheets", "Door-to-Door", "3 Days", 7.00},
@@ -22,59 +20,88 @@ const Package packages[6] {
     {"Package C (Dry Cleaning) - Suits, Dresses, Delicate Fabrics", "Express Door-to-Door", "Same Day", 15.00},
 };
 
+// Function to display package options and ask user for input
 int displayInputOptions() {
     int selectedOption;
 
-    for (int i = 0; i < 6; i++) {
-        cout << "-------------------- " << i + 1 << " --------------------" << endl;
-        cout << packages[i].package << endl;
-        cout << "Service Type: " << packages[i].serviceType << endl;
-        cout << "Duration: " << packages[i].duration << endl;
-        cout << format("Charge: RM {}/kg", packages[i].charge) << endl;
-    }
+    do {
+        // Display all 6 package options
+        for (int i = 0; i < 6; i++) {
+            cout << "-------------------- " << i + 1 << " --------------------" << endl;
+            cout << packages[i].package << endl;
+            cout << "Service Type: " << packages[i].serviceType << endl;
+            cout << "Duration: " << packages[i].duration << endl;
+            cout << "Charge: RM " << fixed << setprecision(2) << packages[i].charge << "/kg" << endl;
+        }
 
-    cout << "-------------------------------------------" << endl;
-    cout << "Please select an option (1-6): ";
-    cin >> selectedOption;
+        cout << "-------------------------------------------" << endl;
+        cout << "Please select an option (1-6): ";
+        cin >> selectedOption;
+
+        // Check for invalid input
+        if (selectedOption < 1 || selectedOption > 6) {
+            cout << "Invalid selection. Please choose a number between 1 and 6.\n\n";
+        }
+
+    } while (selectedOption < 1 || selectedOption > 6);
 
     return selectedOption;
 }
 
+// Function to calculate and display costs
 void calculateAndDisplay(int chosenPackage, float laundryWeight, float deliveryDistance) {
-
     const float laundryCharge = packages[chosenPackage - 1].charge;
-
     const float laundryCost = laundryCharge * laundryWeight;
-    const float deliveryFee = deliveryDistance < 5 ? 0 : (deliveryDistance < 8 ? deliveryDistance * 1.5 : deliveryDistance * 1.8);
+
+    // Calculate delivery fee based on correct distance rules
+    float deliveryFee = 0.0;
+    if (deliveryDistance > 3) {
+        if (deliveryDistance <= 8) {
+            deliveryFee = (deliveryDistance - 3) * 1.5; // RM 1.50 per km after 3 km
+        } else {
+            deliveryFee = (5 * 1.5) + ((deliveryDistance - 8) * 1.8); // Next 5 km at RM 1.50 + extra at RM 1.80
+        }
+    }
+
+    // Service charges
     const float laundryServiceCharges = laundryCost * 0.06;
     const float deliveryServiceCharges = deliveryFee * 0.08;
     const float totalCost = laundryCost + deliveryFee + laundryServiceCharges + deliveryServiceCharges;
 
-    cout << "========== Charges Breakdown ===========" << endl;
+    // Display breakdown
+    cout << "\n========== Charges Breakdown ===========" << endl;
+    cout << "Laundry Cost (" << laundryWeight << " kg x RM " << laundryCharge << "): RM " << fixed << setprecision(2) << laundryCost << endl;
+    cout << "Service Charges, 6%: RM " << fixed << setprecision(2) << laundryServiceCharges << endl;
 
-    cout << format("Laundry Cost ({} kg x RM {}): RM {}", laundryWeight, laundryCharge, laundryCost) << endl;
-    cout << format("Service Charges, 6%: RM {}", laundryServiceCharges) << endl;
-    deliveryDistance != 0 && cout << format("Delivery Fee: RM {}", deliveryFee) << endl;
-    deliveryDistance != 0 && cout << format("Delivery Service Charges, 8%: RM {}", deliveryServiceCharges) << endl;
+    if (deliveryDistance > 0) {
+        cout << "Delivery Fee: RM " << fixed << setprecision(2) << deliveryFee << endl;
+        cout << "Delivery Service Charges, 8%: RM " << fixed << setprecision(2) << deliveryServiceCharges << endl;
+    }
 
     cout << "====================" << endl;
-    cout << format("Total Cost: RM {}", totalCost) << endl;
+    cout << "Total Cost: RM " << fixed << setprecision(2) << totalCost << endl;
     cout << "====================" << endl;
 }
 
 int main() {
     float laundryWeight;
-    float deliveryDistance;
+    float deliveryDistance = 0.0;
 
+    // Display package menu and get user choice
     const int chosen = displayInputOptions();
 
+    // Ask for laundry weight
     cout << "Enter weight of your laundry (KG): ";
     cin >> laundryWeight;
 
+    // Ask for delivery distance only if it's not a self-service package
     if (chosen != 1 && chosen != 4) {
         cout << "Enter delivery distance (KM): ";
         cin >> deliveryDistance;
     }
 
+    // Calculate and display the total cost
     calculateAndDisplay(chosen, laundryWeight, deliveryDistance);
+
+    return 0;
 }
