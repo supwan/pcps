@@ -23,6 +23,7 @@ const Package packages[6] {
 // Function to display package options and ask user for input
 int displayInputOptions() {
     int selectedOption;
+    char confirmation;
 
     do {
         // Display all 6 package options
@@ -35,21 +36,32 @@ int displayInputOptions() {
         }
 
         cout << "-------------------------------------------" << endl;
-        cout << "Please select an option (1-6): ";
+        cout << "> Please select an option (1-6): ";
         cin >> selectedOption;
 
         // Check for invalid input
         if (selectedOption < 1 || selectedOption > 6) {
             cout << "Invalid selection. Please choose a number between 1 and 6.\n\n";
+        } else {
+            const int i = selectedOption - 1;
+            cout << "------------ Chosen Package (" << selectedOption <<  ") -----------" << endl;
+            cout << packages[i].package << endl;
+            cout << "Service Type: " << packages[i].serviceType << endl;
+            cout << "Duration: " << packages[i].duration << endl;
+            cout << "Charge: RM " << fixed << setprecision(2) << packages[i].charge << "/kg" << endl;
+            cout << "-------------------------------------------" << endl;
+            cout << "> Confirm? (y/n): ";
+            cin >> confirmation;
+            cout << "------------------ Others -----------------" << endl;
         }
 
-    } while (selectedOption < 1 || selectedOption > 6);
+    } while (selectedOption < 1 || selectedOption > 6 || confirmation == 'n');
 
     return selectedOption;
 }
 
 // Function to calculate and display costs
-void calculateAndDisplay(int chosenPackage, float laundryWeight, float deliveryDistance) {
+void calculateAndDisplay(const int chosenPackage, const float laundryWeight, const float deliveryDistance) {
     const float laundryCharge = packages[chosenPackage - 1].charge;
     const float laundryCost = laundryCharge * laundryWeight;
 
@@ -91,13 +103,25 @@ int main() {
     const int chosen = displayInputOptions();
 
     // Ask for laundry weight
-    cout << "Enter weight of your laundry (KG): ";
+    cout << "> Enter weight of your laundry (KG): ";
     cin >> laundryWeight;
+
+    while (laundryWeight < 0) {
+        cout << "Invalid laundry weight, try again!" << endl;
+        cout << "> Enter weight of your laundry (KG): ";
+        cin >> laundryWeight;
+    }
+
 
     // Ask for delivery distance only if it's not a self-service package
     if (chosen != 1 && chosen != 4) {
-        cout << "Enter delivery distance (KM): ";
+        cout << "> Enter delivery distance (KM): ";
         cin >> deliveryDistance;
+        while (deliveryDistance < 0) {
+            cout << "Invalid delivery distance, try again!" << endl;
+            cout << "> Enter delivery distance (KM): ";
+            cin >> deliveryDistance;
+        }
     }
 
     // Calculate and display the total cost
