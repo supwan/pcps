@@ -4,17 +4,17 @@ using namespace std;
 
 // Structure to hold each laundry package's details
 struct Package {
-    string package;
+    string packageType;
     string serviceType;
     string duration;
-    float charge;
+    double charge;
 };
 
 // List of available packages
 const Package packages[6] {
     {"Package A (Standard Wash) - Clothes, Towels, Bed Sheets", "Self-Service", "2 Days", 5.00},
     {"Package A (Standard Wash) - Clothes, Towels, Bed Sheets", "Door-to-Door", "3 Days", 7.00},
-    {"Package A (Standard Wash) - Clothes, Towels, Bed Sheets", "Express Door-to-Door", "Same day", 10.00},
+    {"Package A (Standard Wash) - Clothes, Towels, Bed Sheets", "Express Door-to-Door", "Same Day", 10.00},
     {"Package C (Dry Cleaning) - Suits, Dresses, Delicate Fabrics", "Self-Service", "2 Days", 10.00},
     {"Package C (Dry Cleaning) - Suits, Dresses, Delicate Fabrics", "Door-to-Door", "3 Days", 12.00},
     {"Package C (Dry Cleaning) - Suits, Dresses, Delicate Fabrics", "Express Door-to-Door", "Same Day", 15.00},
@@ -29,15 +29,19 @@ int displayInputOptions() {
         // Display all 6 package options
         for (int i = 0; i < 6; i++) {
             cout << "-------------------- " << i + 1 << " --------------------" << endl;
-            cout << packages[i].package << endl;
+            cout << packages[i].packageType << endl;
             cout << "Service Type: " << packages[i].serviceType << endl;
             cout << "Duration: " << packages[i].duration << endl;
             cout << "Charge: RM " << fixed << setprecision(2) << packages[i].charge << "/kg" << endl;
         }
 
         cout << "-------------------------------------------" << endl;
-        cout << "> Please select an option (1-6): ";
+        cout << "> Please select an option (1-6 or 0 to exit): ";
         cin >> selectedOption;
+
+        if (selectedOption == 0) {
+            exit(0);
+        }
 
         // Check for invalid input
         if (selectedOption < 1 || selectedOption > 6) {
@@ -45,7 +49,7 @@ int displayInputOptions() {
         } else {
             const int i = selectedOption - 1;
             cout << "------------ Chosen Package (" << selectedOption <<  ") -----------" << endl;
-            cout << packages[i].package << endl;
+            cout << packages[i].packageType << endl;
             cout << "Service Type: " << packages[i].serviceType << endl;
             cout << "Duration: " << packages[i].duration << endl;
             cout << "Charge: RM " << fixed << setprecision(2) << packages[i].charge << "/kg" << endl;
@@ -61,12 +65,12 @@ int displayInputOptions() {
 }
 
 // Function to calculate and display costs
-void calculateAndDisplay(const int chosenPackage, const float laundryWeight, const float deliveryDistance) {
-    const float laundryCharge = packages[chosenPackage - 1].charge;
-    const float laundryCost = laundryCharge * laundryWeight;
+void calculateAndDisplay(const int chosenPackage, const double laundryWeight, const double deliveryDistance) {
+    const double laundryCharge = packages[chosenPackage - 1].charge;
+    const double laundryCost = laundryCharge * laundryWeight;
 
     // Calculate delivery fee based on correct distance rules
-    float deliveryFee = 0.0;
+    double deliveryFee = 0.0;
     if (deliveryDistance > 3) {
         if (deliveryDistance <= 8) {
             deliveryFee = (deliveryDistance - 3) * 1.5; // RM 1.50 per km after 3 km
@@ -76,9 +80,9 @@ void calculateAndDisplay(const int chosenPackage, const float laundryWeight, con
     }
 
     // Service charges
-    const float laundryServiceCharges = laundryCost * 0.06;
-    const float deliveryServiceCharges = deliveryFee * 0.08;
-    const float totalCost = laundryCost + deliveryFee + laundryServiceCharges + deliveryServiceCharges;
+    const double laundryServiceCharges = laundryCost * 0.06;
+    const double deliveryServiceCharges = deliveryFee * 0.08;
+    const double totalCost = laundryCost + deliveryFee + laundryServiceCharges + deliveryServiceCharges;
 
     // Display breakdown
     cout << "\n========== Charges Breakdown ===========" << endl;
@@ -96,8 +100,8 @@ void calculateAndDisplay(const int chosenPackage, const float laundryWeight, con
 }
 
 int main() {
-    float laundryWeight;
-    float deliveryDistance = 0.0;
+    double laundryWeight;
+    double deliveryDistance = 0.0;
 
     // Display package menu and get user choice
     const int chosen = displayInputOptions();
