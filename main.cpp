@@ -1,5 +1,6 @@
 #include <iostream>
 #include <iomanip> // For setprecision
+#include <string>
 using namespace std;
 
 // Structure to hold each laundry package's details
@@ -20,10 +21,10 @@ const Package packages[6] {
     {"Package C (Dry Cleaning) - Suits, Dresses, Delicate Fabrics", "Express Door-to-Door", "Same Day", 15.00},
 };
 
-// Function to display package options and ask user for input
+// Function to display package options and confirm user selection afterwards
 int displayInputOptions() {
     int selectedOption;
-    char confirmation;
+    string confirmation;
 
     do {
         // Display all 6 package options
@@ -38,7 +39,7 @@ int displayInputOptions() {
         cout << "-------------------------------------------" << endl;
         cout << "> Please select an option (1-6 or 0 to exit): ";
         cin >> selectedOption;
-
+        //Exit if user enters 0
         if (selectedOption == 0) {
             exit(0);
         }
@@ -50,27 +51,34 @@ int displayInputOptions() {
         }
 
         const int i = selectedOption - 1;
-        cout << "------------ Chosen Package (" << selectedOption <<  ") -----------" << endl;
+        cout << "------------ Chosen Package (" << selectedOption << ") -----------" << endl;
         cout << packages[i].packageType << endl;
         cout << "Service Type: " << packages[i].serviceType << endl;
         cout << "Duration: " << packages[i].duration << endl;
         cout << "Charge: RM " << fixed << setprecision(2) << packages[i].charge << "/kg" << endl;
         cout << "-------------------------------------------" << endl;
-        cout << "> Confirm? (y/n): ";
-        cin >> confirmation;
-        cout << "------------------ Others -----------------" << endl;
 
-    } while (selectedOption < 1 || selectedOption > 6 || confirmation == 'n');
+        // Confirm package selection
+        do {
+            cout << "> Confirm? (y/n): ";
+            cin >> confirmation;
+             
+            if (confirmation != "y" && confirmation != "n"){
+                cout<<"Invalid data entered, please enter 'y' for yes and 'n' for no."<<endl;
+            }
+        } while (confirmation != "y" && confirmation != "n");
+
+    } while (confirmation == "n");
 
     return selectedOption;
 }
 
-// Function to calculate and display costs
+// Function to calculate and display cost of laundry, delivery and service fee altogether
 void calculateAndDisplay(const int chosenPackage, const double laundryWeight, const double deliveryDistance) {
     const double laundryCharge = packages[chosenPackage - 1].charge;
     const double laundryCost = laundryCharge * laundryWeight;
 
-    // Calculate delivery fee based on correct distance rules
+    // Calculate delivery fee based on distance 
     double deliveryFee = 0.0;
     if (deliveryDistance > 3) {
         if (deliveryDistance <= 8) {
@@ -80,7 +88,7 @@ void calculateAndDisplay(const int chosenPackage, const double laundryWeight, co
         }
     }
 
-    // Service charges
+    // Calculate service charges: 6% for laundry, 8% for delivery
     const double laundryServiceCharges = laundryCost * 0.06;
     const double deliveryServiceCharges = deliveryFee * 0.08;
     const double totalCost = laundryCost + deliveryFee + laundryServiceCharges + deliveryServiceCharges;
@@ -107,16 +115,14 @@ int main() {
     // Display package menu and get user choice
     const int chosen = displayInputOptions();
 
-    // Ask for laundry weight
+    // Ask for laundry weight and validate weight entered
     cout << "> Enter weight of your laundry (KG): ";
     cin >> laundryWeight;
-
     while (laundryWeight <= 0) {
         cout << "Invalid laundry weight, try again!" << endl;
         cout << "> Enter weight of your laundry (KG): ";
         cin >> laundryWeight;
     }
-
 
     // Ask for delivery distance only if it's not a self-service package
     if (chosen != 1 && chosen != 4) {
