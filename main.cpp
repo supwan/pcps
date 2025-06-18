@@ -44,20 +44,21 @@ int displayInputOptions() {
         }
 
         // Check for invalid input
-        if (selectedOption < 1 || selectedOption > 6) {
-            cout << "Invalid selection. Please choose a number between 1 and 6.\n\n";
-        } else {
-            const int i = selectedOption - 1;
-            cout << "------------ Chosen Package (" << selectedOption <<  ") -----------" << endl;
-            cout << packages[i].packageType << endl;
-            cout << "Service Type: " << packages[i].serviceType << endl;
-            cout << "Duration: " << packages[i].duration << endl;
-            cout << "Charge: RM " << fixed << setprecision(2) << packages[i].charge << "/kg" << endl;
-            cout << "-------------------------------------------" << endl;
-            cout << "> Confirm? (y/n): ";
-            cin >> confirmation;
-            cout << "------------------ Others -----------------" << endl;
+        while (selectedOption < 1 || selectedOption > 6) {
+            cout << "Invalid selection. Please select an option (1-6 or 0 to exit): ";
+            cin >> selectedOption;
         }
+
+        const int i = selectedOption - 1;
+        cout << "------------ Chosen Package (" << selectedOption <<  ") -----------" << endl;
+        cout << packages[i].packageType << endl;
+        cout << "Service Type: " << packages[i].serviceType << endl;
+        cout << "Duration: " << packages[i].duration << endl;
+        cout << "Charge: RM " << fixed << setprecision(2) << packages[i].charge << "/kg" << endl;
+        cout << "-------------------------------------------" << endl;
+        cout << "> Confirm? (y/n): ";
+        cin >> confirmation;
+        cout << "------------------ Others -----------------" << endl;
 
     } while (selectedOption < 1 || selectedOption > 6 || confirmation == 'n');
 
@@ -110,7 +111,7 @@ int main() {
     cout << "> Enter weight of your laundry (KG): ";
     cin >> laundryWeight;
 
-    while (laundryWeight < 0) {
+    while (laundryWeight <= 0) {
         cout << "Invalid laundry weight, try again!" << endl;
         cout << "> Enter weight of your laundry (KG): ";
         cin >> laundryWeight;
